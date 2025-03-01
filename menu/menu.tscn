@@ -1,0 +1,68 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1mnrww0r8e64"]
+
+[ext_resource type="Script" path="res://menu/menu.gd" id="1_1c4l2"]
+[ext_resource type="AudioStream" uid="uid://bjycwpucdm88c" path="res://menu/Menu.mp3" id="1_5s7nn"]
+[ext_resource type="Texture2D" uid="uid://dey1dnkdnqdf6" path="res://menu/Gerero.png" id="2_65ugg"]
+[ext_resource type="FontFile" uid="uid://davg0vu8wpbfo" path="res://menu/Fuente.TTF" id="3_fe8or"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_g4txk"]
+font = ExtResource("3_fe8or")
+font_size = 50
+outline_size = 7
+outline_color = Color(0.972549, 0, 0.215686, 1)
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1c4l2")
+
+[node name="audio_menu" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("1_5s7nn")
+autoplay = true
+parameters/looping = false
+
+[node name="sprite_menu" type="Sprite2D" parent="."]
+position = Vector2(559.326, 304.397)
+scale = Vector2(1.12305, 1.03025)
+texture = ExtResource("2_65ugg")
+offset = Vector2(13.9569, 15.6303)
+
+[node name="vbox_menu" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 71.0
+offset_top = 470.0
+offset_right = 373.0
+offset_bottom = 563.0
+metadata/_edit_group_ = true
+
+[node name="label_opciones" type="Label" parent="vbox_menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.972549, 0, 0.215686, 1)
+theme_override_font_sizes/font_size = 30
+text = "Opciones : "
+
+[node name="button_start" type="Button" parent="vbox_menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "START"
+
+[node name="button_exit" type="Button" parent="vbox_menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "EXIT"
+
+[node name="label_title" type="Label" parent="."]
+layout_mode = 2
+offset_left = 672.0
+offset_top = 13.0
+offset_right = 1122.0
+offset_bottom = 78.0
+text = "骷髅荒途：骑士归来"
+label_settings = SubResource("LabelSettings_g4txk")
+
+[connection signal="pressed" from="vbox_menu/button_start" to="." method="_on_btn_start_pressed"]
+[connection signal="pressed" from="vbox_menu/button_exit" to="." method="_on_btn_end_pressed"]

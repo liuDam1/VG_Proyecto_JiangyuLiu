@@ -1,0 +1,9 @@
+res://player/player.tscn
+res://evironment/floor.tscn
+res://evironment/evironment.tscn
+res://menu/menu.tscn
+res://fondo/fondo.tscn
+res://coleccionable/coleccionable.tscn
+res://ene_status/cactus.tscn
+res://contador/contador.tscn
+res://ene_dyn/ene_dyn_esqueleto.tscn

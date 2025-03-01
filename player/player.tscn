@@ -1,0 +1,382 @@
+[gd_scene load_steps=42 format=3 uid="uid://cu2fgl456fkyt"]
+
+[ext_resource type="Texture2D" uid="uid://b5k7yl6k8okjb" path="res://player/img/without_outline/DEATH.png" id="1_tpulq"]
+[ext_resource type="Texture2D" uid="uid://chxmuxi735v08" path="res://player/img/without_outline/IDLE.png" id="2_p3xp3"]
+[ext_resource type="Texture2D" uid="uid://bq2wrj8x118dh" path="res://player/img/without_outline/JUMP.png" id="3_plajy"]
+[ext_resource type="Texture2D" uid="uid://bgj6qvlfw8ygd" path="res://player/img/without_outline/RUN.png" id="4_1fo16"]
+[ext_resource type="PackedScene" uid="uid://c0n007mrhfi3n" path="res://contador/contador.tscn" id="5_u371s"]
+[ext_resource type="AudioStream" uid="uid://cnit8x42rpysx" path="res://player/morrir.mp3" id="6_2a1d1"]
+
+[sub_resource type="GDScript" id="GDScript_robvn"]
+script/source = "extends CharacterBody2D
+
+@export var gravity_scale = 2
+@export var speed = 400
+@export var acceleration = 500
+@export var friction = 2000
+@export var jump_force = -550
+@export var air_acceleration = 800
+@export var air_friction = 700
+@export var limite_caida: float = 1000 
+
+@onready var ani_player = $ani_player
+@onready var contador: Control = $CanvasLayer/Contador
+
+# Variables
+var monedas: int = 0
+@export var vida: int = 3
+
+# Inicialización
+func _ready() -> void:
+	add_to_group(\"jugadores\")
+	contador.actualizar(0)
+
+# Lógica de física
+func _physics_process(delta: float) -> void:
+	var input_axis = Input.get_axis(\"mover_izquierda\", \"mover_derecha\")
+	apply_gravity(delta)
+	handle_acceleration(input_axis, delta)
+	apply_friction(input_axis, delta)
+	handle_jump()
+	handle_air_acceleration(input_axis, delta)
+	update_animation(input_axis)
+	move_and_slide()
+	if global_position.y > limite_caida:
+		get_tree().reload_current_scene()
+
+# Funciones de movimiento
+func apply_gravity(delta):
+	if not is_on_floor():
+		velocity += get_gravity() * delta * gravity_scale
+
+func handle_acceleration(input_axis, delta):
+	if not is_on_floor(): return
+	if input_axis != 0:
+		velocity.x = move_toward(velocity.x, speed * input_axis, acceleration * delta)
+
+func apply_friction(input_axis, delta):
+	if input_axis == 0 and is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, friction * delta)
+
+func handle_jump():
+	if is_on_floor():
+		if Input.is_action_pressed(\"saltar\"):
+			velocity.y = jump_force
+
+func handle_air_acceleration(input_axis, delta):
+	if is_on_floor(): return
+	if input_axis != 0:
+		velocity.x = move_toward(velocity.x, speed * input_axis, air_acceleration * delta)
+
+# Animaciones
+func update_animation(input_axis):
+	if input_axis != 0:
+		ani_player.speed_scale = velocity.length() / 100
+		ani_player.flip_h = (input_axis < 0)
+		ani_player.play(\"run\")
+	elif not is_on_floor():
+		ani_player.play(\"jump\")
+	else:
+		ani_player.speed_scale = 1
+		ani_player.play(\"idle\")
+
+# Lógica de monedas y vida
+func add_moneda():
+	monedas += 1
+	contador.actualizar(monedas)
+
+func perder_vida():
+	vida -= 1
+	contador.actualizarVida(vida)
+	if vida <= 0:
+		set_physics_process(false)
+		$ani_player.play(\"muerte\")
+		$tiempo/audio_morrir.play()
+		$tiempo.start()
+		await $tiempo.timeout
+		get_tree().reload_current_scene()
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oglha"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(0, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3jwho"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(96, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ubh4"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(192, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b73wu"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(288, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e7olv"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(384, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g5i6u"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(480, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0exq3"]
+atlas = ExtResource("2_p3xp3")
+region = Rect2(576, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_30dkx"]
+atlas = ExtResource("3_plajy")
+region = Rect2(0, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bs46j"]
+atlas = ExtResource("3_plajy")
+region = Rect2(96, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xhogf"]
+atlas = ExtResource("3_plajy")
+region = Rect2(192, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y0604"]
+atlas = ExtResource("3_plajy")
+region = Rect2(288, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a84xx"]
+atlas = ExtResource("3_plajy")
+region = Rect2(384, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ar58"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(0, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_77oq4"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(96, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d8yyo"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(192, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xvuy3"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(288, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n58us"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(384, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xmwsj"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(480, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rb6fo"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(576, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x7sy8"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(672, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i4oxq"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(768, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7nbyh"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(864, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ypet8"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(960, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4x8n1"]
+atlas = ExtResource("1_tpulq")
+region = Rect2(1056, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qirvu"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(0, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rfvpj"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(96, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_otkuy"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(192, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_no2w1"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(288, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ooxf"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(384, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n5xvh"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(480, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mtsn3"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(576, 0, 96, 84)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ra4j3"]
+atlas = ExtResource("4_1fo16")
+region = Rect2(672, 0, 96, 84)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hibto"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oglha")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3jwho")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ubh4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b73wu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e7olv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g5i6u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0exq3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_30dkx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bs46j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xhogf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y0604")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a84xx")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ar58")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_77oq4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d8yyo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xvuy3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n58us")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xmwsj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rb6fo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x7sy8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i4oxq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7nbyh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ypet8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4x8n1")
+}],
+"loop": true,
+"name": &"muerte",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qirvu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rfvpj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_otkuy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_no2w1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1ooxf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n5xvh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mtsn3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ra4j3")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ppgnu"]
+size = Vector2(27, 36.6071)
+
+[node name="player" type="CharacterBody2D"]
+position = Vector2(583, 322)
+scale = Vector2(0.69377, 0.608589)
+script = SubResource("GDScript_robvn")
+metadata/_edit_group_ = true
+
+[node name="ani_player" type="AnimatedSprite2D" parent="."]
+position = Vector2(647, 497)
+scale = Vector2(1.12029, 1.05798)
+sprite_frames = SubResource("SpriteFrames_hibto")
+animation = &"muerte"
+
+[node name="col_player" type="CollisionShape2D" parent="."]
+position = Vector2(646.5, 499.553)
+shape = SubResource("RectangleShape2D_ppgnu")
+
+[node name="cam_player" type="Camera2D" parent="."]
+position = Vector2(703.403, 415.716)
+scale = Vector2(-0.0640359, -3.88967)
+offset = Vector2(0, 1)
+zoom = Vector2(2, 2)
+limit_left = 0
+limit_bottom = 648
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Contador" parent="CanvasLayer" instance=ExtResource("5_u371s")]
+
+[node name="tiempo" type="Timer" parent="."]
+wait_time = 3.0
+
+[node name="audio_morrir" type="AudioStreamPlayer2D" parent="tiempo"]
+stream = ExtResource("6_2a1d1")

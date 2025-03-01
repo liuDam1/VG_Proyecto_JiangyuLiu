@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://co7aardpo00l2"]
+
+[ext_resource type="Script" path="res://ene_status/cactus.gd" id="1_oq77n"]
+[ext_resource type="Texture2D" uid="uid://b7r3vbgoqbo36" path="res://ene_status/img/cactus.png" id="2_5tvl2"]
+[ext_resource type="AudioStream" uid="uid://dcjjimya6l5fy" path="res://ene_status/efectoDano.mp3" id="3_6inky"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2cdcq"]
+size = Vector2(40, 56)
+
+[node name="Cactus" type="Area2D"]
+script = ExtResource("1_oq77n")
+metadata/_edit_group_ = true
+
+[node name="spr_cactus" type="Sprite2D" parent="."]
+position = Vector2(563, 444)
+scale = Vector2(0.119141, 0.119141)
+texture = ExtResource("2_5tvl2")
+
+[node name="col_cactus" type="CollisionShape2D" parent="."]
+position = Vector2(563, 444)
+shape = SubResource("RectangleShape2D_2cdcq")
+
+[node name="audio_cactus" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_6inky")
+pitch_scale = 2.0
+parameters/looping = false
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
