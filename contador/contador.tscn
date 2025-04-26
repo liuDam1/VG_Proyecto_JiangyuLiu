@@ -40,6 +40,7 @@ offset_left = 105.0
 offset_top = 77.0
 offset_right = 149.0
 offset_bottom = 158.0
+metadata/_edit_group_ = true
 
 [node name="label_contador_vida" type="Label" parent="hbox_contador_vida"]
 layout_mode = 2
